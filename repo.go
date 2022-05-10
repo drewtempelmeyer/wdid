@@ -19,8 +19,8 @@ type TaskRepository interface {
 	AddTask(*Task) error
 	TasksForDate(time.Time) ([]Task, error)
 	PendingTasks() ([]Task, error)
-	CompleteTasks(...int64) error
-	DeleteTasks(...int64) error
+	CompleteTasks([]int64) error
+	DeleteTasks([]int64) error
 }
 
 // NewTask generates a new Task struct with the description and the current time
@@ -108,9 +108,14 @@ func (r *SQLRepository) PendingTasks() ([]Task, error) {
 	return tasks, nil
 }
 
-func (r *SQLRepository) CompleteTasks(ids ...int64) error {
-	q := "UPDATE tasks SET completed_at = NOW() WHERE id IN (?)"
-	query, args, err := sqlx.In(q, ids)
+func (r *SQLRepository) CompleteTasks(ids []int64) error {
+	arg := map[string]interface{}{
+		"time": time.Now(),
+		"ids":  ids,
+	}
+
+	query, args, err := sqlx.Named("UPDATE tasks SET completed_at = :time WHERE id IN (:ids) AND completed_at IS NULL", arg)
+	query, args, err = sqlx.In(query, args...)
 
 	if err != nil {
 		return err
@@ -122,7 +127,7 @@ func (r *SQLRepository) CompleteTasks(ids ...int64) error {
 	return nil
 }
 
-func (r *SQLRepository) DeleteTasks(ids ...int64) error {
+func (r *SQLRepository) DeleteTasks(ids []int64) error {
 	q := "DELETE FROM tasks WHERE id IN (?)"
 	query, args, err := sqlx.In(q, ids)
 

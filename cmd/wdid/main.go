@@ -81,7 +81,7 @@ func completeCmd(r wdid.TaskRepository) *cobra.Command {
 		Example: "wdid complete 23 24",
 		Run: func(cmd *cobra.Command, args []string) {
 			ids := stringSliceToInt64(args)
-			err := r.CompleteTasks(ids...)
+			err := r.CompleteTasks(ids)
 
 			if err != nil {
 				log.Fatalf("Error completing task: %s\n", err)
@@ -92,12 +92,12 @@ func completeCmd(r wdid.TaskRepository) *cobra.Command {
 
 func deleteCmd(r wdid.TaskRepository) *cobra.Command {
 	return &cobra.Command{
-		Use:     "complete",
-		Short:   "Marks the task(s) as completed",
-		Example: "wdid complete 23 24",
+		Use:     "delete",
+		Short:   "Deletes the task(s)",
+		Example: "wdid delete 23 24",
 		Run: func(cmd *cobra.Command, args []string) {
 			ids := stringSliceToInt64(args)
-			err := r.DeleteTasks(ids...)
+			err := r.DeleteTasks(ids)
 
 			if err != nil {
 				log.Fatalf("Error deleting task: %s\n", err)
